@@ -29,7 +29,7 @@ describe("bypassSFTP", function() {
       return Promise.resolve();
     });
 
-    SftpToS3.execute(config)
+    SftpToS3.batch(config)
       .then((success) => {
         sinon.assert.calledTwice(Client.prototype.list);
         sinon.assert.calledOnce(Client.prototype.mkdir);
@@ -51,7 +51,7 @@ describe("bypassSFTP", function() {
 
     sinon.stub(Client.prototype, 'end');
 
-    SftpToS3.execute(config)
+    SftpToS3.batch(config)
       .catch((err) => {
         expect(err).to.equal("meowlure");
         done()

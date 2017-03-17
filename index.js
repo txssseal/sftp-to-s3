@@ -4,7 +4,7 @@ const retrieveFileStreams = require('./lib/retrieveFileStreams')
 const uploadToS3 = require('./lib/uploadToS3')
 
 const SftpToS3 = {
-  execute: function(config) {
+  batch: function(config) {
     const sftp = new Client()
 
     return new Promise( (resolve, reject) => {
