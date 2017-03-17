@@ -24,5 +24,6 @@ SftpToS3.batch(config)
   })
 ```
 
-see `http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property` for complete aws config options
-see `https://github.com/jyu213/ssh2-sftp-client` for complete sftp options
+[for complete aws s3 config options go here](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/Config.html#constructor-property "AWS S3 Config Doc")
+
+[for complete sftp config options go here](https://github.com/jyu213/ssh2-sftp-client)

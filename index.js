@@ -8,7 +8,7 @@ const SftpToS3 = {
     const sftp = new Client()
 
     return new Promise( (resolve, reject) => {
-      return sftp.connect(config)
+      return sftp.connect(config.sftp)
         .then(() => {
           return sftp.list(config.fileDownloadDir);
         })
