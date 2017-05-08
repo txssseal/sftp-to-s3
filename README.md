@@ -11,8 +11,8 @@ const config = {
   aws: {
     bucket: "bucket_name", accessKeyId: 'AKID', secretAccessKey: 'SECRET', region: 'us-west-2'
   },
-  fileDownloadDir: "./",
-  completedDir: './completed-uploads/'
+  fileDownloadDir: "/",
+  completedDir: '/completed-uploads/'
 };
 
 SftpToS3.batch(config)
