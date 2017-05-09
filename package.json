@@ -25,7 +25,7 @@
   "homepage": "https://github.com/bypasslane/sftp-to-s3#readme",
   "devDependencies": {
     "chai": "^3.5.0",
-    "sinon": "^2.0.0"
+    "sinon": "^2.2.0"
   },
   "dependencies": {
     "aws-sdk": "^2.28.0",
