@@ -5,7 +5,7 @@ const SftpToS3 = require('../index');
 const retrieveFileStreams = require('../lib/retrieveFileStreams');
 const Client = require('ssh2-sftp-client');
 const uploadToS3 = require('../lib/uploadToS3');
-const config = {test: "config", aws: {}};
+const config = {test: "config", aws: {bucket: "test"}, fileDownloadDir: '/', completedDir: '/'};
 
 describe("bypassSFTP", function() {
   it('should run succesfully', function(done) {
@@ -46,14 +46,14 @@ describe("bypassSFTP", function() {
     Client.prototype.end.restore();
 
     sinon.stub(Client.prototype, 'connect').callsFake(function() {
-      return Promise.reject("meowlure");
+      return Promise.reject("error");
     });
 
     sinon.stub(Client.prototype, 'end');
 
     SftpToS3.batch(config)
       .catch((err) => {
-        expect(err).to.equal("meowlure");
+        expect(err).to.equal("error");
         done()
       })
     sinon.assert.calledOnce(Client.prototype.connect);
