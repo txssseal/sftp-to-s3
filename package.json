@@ -4,7 +4,7 @@
   "description": "library to upload files from sftp server to aws s3",
   "main": "index.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/bypasslane/sftp-to-s3#readme",
   "devDependencies": {
     "chai": "^3.5.0",
+    "mocha": "^3.5.3",
     "sinon": "^2.2.0"
   },
   "dependencies": {
