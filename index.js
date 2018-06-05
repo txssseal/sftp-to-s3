@@ -27,7 +27,7 @@ const SftpToS3 = {
         reject("malformed config, fileDownloadDir must be absolute");
         return;
       }
-    
+
       if (path.isAbsolute(config.completedDir) === false) {
         console.error("completedDir must be absolute");
         reject("malformed config, completedDir must be absolute");
@@ -45,7 +45,7 @@ const SftpToS3 = {
           return streamToString(fileStreams)
         })
         .then((dataArray) => {
-          return uploadToS3.putBatch(config.aws, dataArray)
+          return uploadToS3.putBatch(config, dataArray)
         })
         .then((files) => {
           sftp.mkdir(config.completedDir, true)
@@ -71,4 +71,3 @@ const SftpToS3 = {
 module.exports = SftpToS3
 
 
-  
