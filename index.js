@@ -3,22 +3,22 @@ const streamToString = require('./lib/streamToString');
 const retrieveFileStreams = require('./lib/retrieveFileStreams');
 const uploadToS3 = require('./lib/uploadToS3');
 const path = require('path');
-
 const SftpToS3 = {
-  batch: function(config) {
-    const sftp = new Client()
+  batch: function (config) {
+    const sftp = new Client();
+    var numOfUploadedFiles = 0;
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // handle path errors
       if (config.aws === undefined) {
-        console.error("aws key is require for config");
-        reject("malformed config, aws key is require for config");
+        console.error("aws key is required for config");
+        reject("malformed config, aws key is required for config");
         return;
       }
 
       if (config.aws.bucket === undefined) {
         console.error("aws bucket is require in aws key");
-        reject("malformed config, aws bucket is require in aws key");
+        reject("malformed config, aws bucket is required in aws key");
         return;
       }
 
@@ -27,7 +27,7 @@ const SftpToS3 = {
         reject("malformed config, fileDownloadDir must be absolute");
         return;
       }
-    
+
       if (path.isAbsolute(config.completedDir) === false) {
         console.error("completedDir must be absolute");
         reject("malformed config, completedDir must be absolute");
@@ -39,13 +39,14 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then((fileList) => {
-          return retrieveFileStreams(sftp, config, fileList, "sftp")
+          numOfUploadedFiles = fileList.length;
+          return retrieveFileStreams(sftp, config, fileList, "sftp");
         })
         .then((fileStreams) => {
-          return streamToString(fileStreams)
+          return streamToString(fileStreams);
         })
         .then((dataArray) => {
-          return uploadToS3.putBatch(config.aws, dataArray)
+          return uploadToS3.putBatch(config, dataArray);
         })
         .then((files) => {
           sftp.mkdir(config.completedDir, true)
@@ -54,16 +55,16 @@ const SftpToS3 = {
         .then((files) => {
           files.map((file) => {
             sftp.rename(file.name, config.completedDir + file.name);
-          })
-          console.log("upload finished")
-          sftp.end()
-          return resolve("ftp files uploaded")
+          });
+          console.log("upload finished, processed " + numOfUploadedFiles + " files");
+          sftp.end();
+          return resolve("ftp files uploaded");
         })
-        .catch( function(err) {
-          console.error("Error", err);
-          sftp.end()
-          return reject(err)
-        })
+        .catch(function (err) {
+          console.error("Error during sftp to s3 download: ", err);
+          sftp.end();
+          return reject(err);
+        });
     })
   }
 }
@@ -71,4 +72,3 @@ const SftpToS3 = {
 module.exports = SftpToS3
 
 
-  
