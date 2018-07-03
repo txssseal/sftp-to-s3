@@ -1,5 +1,4 @@
 const Client = require('ssh2-sftp-client');
-const streamToString = require('./lib/streamToString');
 const retrieveFileStreams = require('./lib/retrieveFileStreams');
 const uploadToS3 = require('./lib/uploadToS3');
 const path = require('path');
