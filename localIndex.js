@@ -3,10 +3,26 @@ const streamToString = require('./lib/streamToString');
 const retrieveFileStreams = require('./lib/retrieveFileStreams');
 const uploadToS3 = require('./lib/uploadToS3');
 const path = require('path');
+const fs = require('fs');
 const SftpToS3 = {
-  batch: function (config) {
+  batch: function () {
     const sftp = new Client();
     var numOfUploadedFiles = 0;
+
+    /*update here with path to your secret key*/
+    var config = {
+        sftp: {
+            host: "sftp3.urjanet.com",
+            username: "maintenance@aquicore.com",
+            port: 22,
+            privateKey: fs.readFileSync('/Users/caitlinhenry/.ssh/urjanet')
+        },
+        aws: {
+            bucket: "urjanet-raw-files-dev"
+        },
+        fileDownloadDir: "/sftp/",
+        completedDir: "/sftp/completed-uploads/"
+    };
 
     return new Promise((resolve, reject) => {
       // handle path errors
@@ -65,6 +81,8 @@ const SftpToS3 = {
     })
   }
 }
+
+SftpToS3.batch();
 
 module.exports = SftpToS3
 
