@@ -39,6 +39,7 @@ const SftpToS3 = {
         })
         .then((fileList) => {
           numOfUploadedFiles = fileList.length;
+          console.log("File list:", fileList);
           return retrieveFileStreams(sftp, config, fileList, "sftp");
         })
         .then((dataArray) => {
@@ -51,8 +52,9 @@ const SftpToS3 = {
         .then((files) => {
           files.map((file) => {
             sftp.rename(file.name, config.completedDir + file.name);
+            console.log("Moved " + file.name + " to completed");
           });
-          console.dir("upload finished, processed " + numOfUploadedFiles + " files");
+          console.log("upload finished, processed " + numOfUploadedFiles + " files");
           sftp.end();
           return resolve("ftp files uploaded");
         })
