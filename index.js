@@ -38,7 +38,7 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then((fileList) => {
-          console.info("Original file list:", filteredFiles);
+          console.info("Original file list:", fileList);
           const filteredFiles = fileList.filter((file) => {
             // Filter out directories from the list, we only care about the files
             return file.type !== 'd';
