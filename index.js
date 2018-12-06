@@ -57,7 +57,10 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then((files) => {
-          files.map((file) => {
+          files.filter((file) => {
+            // Filter out directories from the list, we only care about the files
+            return file.type !== 'd';
+          }).map((file) => {
             sftp.rename(file.name, config.completedDir + file.name);
             console.info("Moved " + file.name + " to completed");
           });
