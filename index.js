@@ -38,16 +38,21 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then((fileList) => {
-          numOfUploadedFiles = fileList.length;
-          console.info("File list:", fileList);
-          return retrieveFileStreams(sftp, config, fileList, "sftp");
+          console.info("Original file list:", filteredFiles);
+          const filteredFiles = fileList.filter((file) => {
+            // Filter out directories from the list, we only care about the files
+            return file.type !== 'd';
+          });
+          numOfUploadedFiles = filteredFiles.length;
+          console.info("Filtered file list:", filteredFiles);
+          return retrieveFileStreams(sftp, config, filteredFiles, "sftp");
         })
         .then((dataArray) => {
-          console.info('Files retrieved');
+          console.info("Files retrieved");
           return uploadToS3.putBatch(config, dataArray);
         })
         .then((files) => {
-          console.info('S3 put finished');
+          console.info("S3 put finished");
           sftp.mkdir(config.completedDir, true)
           return sftp.list(config.fileDownloadDir);
         })
