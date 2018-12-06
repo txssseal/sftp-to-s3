@@ -39,22 +39,24 @@ const SftpToS3 = {
         })
         .then((fileList) => {
           numOfUploadedFiles = fileList.length;
-          console.log("File list:", fileList);
+          console.info("File list:", fileList);
           return retrieveFileStreams(sftp, config, fileList, "sftp");
         })
         .then((dataArray) => {
+          console.info('Files retrieved');
           return uploadToS3.putBatch(config, dataArray);
         })
         .then((files) => {
+          console.info('S3 put finished');
           sftp.mkdir(config.completedDir, true)
           return sftp.list(config.fileDownloadDir);
         })
         .then((files) => {
           files.map((file) => {
             sftp.rename(file.name, config.completedDir + file.name);
-            console.log("Moved " + file.name + " to completed");
+            console.info("Moved " + file.name + " to completed");
           });
-          console.log("upload finished, processed " + numOfUploadedFiles + " files");
+          console.info("upload finished, processed " + numOfUploadedFiles + " files");
           sftp.end();
           return resolve("ftp files uploaded");
         })
