@@ -2,10 +2,26 @@ const Client = require('ssh2-sftp-client');
 const retrieveFileStreams = require('./lib/retrieveFileStreams');
 const uploadToS3 = require('./lib/uploadToS3');
 const path = require('path');
+const fs = require('fs');
 const SftpToS3 = {
-  batch: function (config) {
+  batch: function () {
     const sftp = new Client();
     var numOfUploadedFiles = 0;
+
+    /*update here with path to your secret key*/
+    var config = {
+        sftp: {
+            host: "sftp3.urjanet.com",
+            username: "maintenance@aquicore.com",
+            port: 22,
+            privateKey: fs.readFileSync('/Users/caitlinhenry/.ssh/urjanet')
+        },
+        aws: {
+            bucket: "urjanet-raw-files-dev"
+        },
+        fileDownloadDir: "/sftp/",
+        completedDir: "/sftp/completed-uploads/"
+    };
 
     return new Promise((resolve, reject) => {
       // handle path errors
@@ -38,33 +54,21 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then((fileList) => {
-          console.info("Original file list:", fileList);
-          const filteredFiles = fileList.filter((file) => {
-            // Filter out directories from the list, we only care about the files
-            return file.type !== 'd';
-          });
-          numOfUploadedFiles = filteredFiles.length;
-          console.info("Filtered file list:", filteredFiles);
-          return retrieveFileStreams(sftp, config, filteredFiles, "sftp");
+          numOfUploadedFiles = fileList.length;
+          return retrieveFileStreams(sftp, config, fileList, "sftp");
         })
         .then((dataArray) => {
-          console.info("Files retrieved");
           return uploadToS3.putBatch(config, dataArray);
         })
         .then((files) => {
-          console.info("S3 put finished");
           sftp.mkdir(config.completedDir, true)
           return sftp.list(config.fileDownloadDir);
         })
         .then((files) => {
-          files.filter((file) => {
-            // Filter out directories from the list, we only care about the files
-            return file.type !== 'd';
-          }).map((file) => {
+          files.map((file) => {
             sftp.rename(file.name, config.completedDir + file.name);
-            console.info("Moved " + file.name + " to completed");
           });
-          console.info("upload finished, processed " + numOfUploadedFiles + " files");
+          console.dir("upload finished, processed " + numOfUploadedFiles + " files");
           sftp.end();
           return resolve("ftp files uploaded");
         })
@@ -76,6 +80,8 @@ const SftpToS3 = {
     })
   }
 }
+
+SftpToS3.batch();
 
 module.exports = SftpToS3
 
