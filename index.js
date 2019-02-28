@@ -53,17 +53,20 @@ const SftpToS3 = {
           return sftp.list(config.fileDownloadDir);
         })
         .then(files => {
+          console.log("renaming/moving files");
+          const fileNames = [];
           files.map(file => {
             sftp.rename(
               config.fileDownloadDir + file.name,
               config.completedDir + file.name
             );
+            fileNames.push(file.name);
           });
           console.log("upload finished");
           sftp.end();
-          return resolve("ftp files uploaded");
+          return resolve(fileNames);
         })
-        .catch(function(err) {
+        .catch(err => {
           console.error("Error", err);
           sftp.end();
           return reject(err);
