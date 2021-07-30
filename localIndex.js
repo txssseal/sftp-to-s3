@@ -14,12 +14,12 @@ const SftpToS3 = {
             host: "sftp3.urjanet.com",
             username: "maintenance@aquicore.com",
             port: 22,
-            privateKey: fs.readFileSync('/Users/caitlinhenry/.ssh/urjanet')
+            privateKey: fs.readFileSync('/Users/kaelanholic/Desktop/dataEngineering/sftp-to-s3/urjanet')
         },
         aws: {
             bucket: "urjanet-raw-files-dev"
         },
-        fileDownloadDir: "/sftp/",
+        fileDownloadDir: "/sftp/completed-uploads/",
         completedDir: "/sftp/completed-uploads/"
     };
 
@@ -55,7 +55,8 @@ const SftpToS3 = {
         })
         .then((fileList) => {
           numOfUploadedFiles = fileList.length;
-          return retrieveFileStreams(sftp, config, fileList, "sftp");
+          const filesFiltered = fileList.filter(file => file.name === 'Aquicore_07_26_21_04_32.zip');
+          return retrieveFileStreams(sftp, config, filesFiltered, "sftp");
         })
         .then((dataArray) => {
           return uploadToS3.putBatch(config, dataArray);
